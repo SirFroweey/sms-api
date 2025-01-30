@@ -1,5 +1,5 @@
-import { Request, Response } from "express";
-import Message from "../models/message";
+import { Request, Response } from 'express';
+import Message from '../models/message';
 
 interface ListApiModel {
   from: string,
@@ -10,7 +10,7 @@ interface ListApiModel {
 const cleanProperties = (i: ListApiModel): ListApiModel => {
   const addPlusPrefix = (value?: string): string | undefined => {
     // We add the missing + char to the front of the property string
-    return value && !value.startsWith("+") ? `+${value}` : value;
+    return value && !value.startsWith('+') ? `+${value}` : value;
   };
 
   return {
@@ -54,10 +54,10 @@ export default class MessagesController {
         const newMessage = await Message.create({ from, to, message });
         res.status(201).json(newMessage);
       } else {
-        res.status(429).json({ error: "Too many requests. Please wait before sending another message." });
+        res.status(429).json({ error: 'Too many requests. Please wait before sending another message.' });
       }
     } catch (error) {
-      res.status(500).json({ error: "Internal Server Error" });
+      res.status(500).json({ error: 'Internal Server Error' });
     }
   }
 

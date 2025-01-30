@@ -65,6 +65,7 @@ Message.init(
   }
 );
 
+/** Refresh db everytime we run the server */
 (async () => {
     await sequelize.sync({ force: true });
 })();
