@@ -5,4 +5,9 @@ const sequelize = new Sequelize({
   storage: './kixie.db',
 });
 
+/** Let's refresh the db everytime we run the server for development purposes */
+(async () => {
+    await sequelize.sync({ force: true });
+})();
+
 export default sequelize;

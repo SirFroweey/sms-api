@@ -1,5 +1,5 @@
 import { 
-  DataTypes, Model, InferAttributes, InferCreationAttributes, CreationOptional
+  DataTypes, Model, CreationOptional
 } from 'sequelize';
 import sequelize from './index';
 import { isValidPhoneNumber } from 'libphonenumber-js';
@@ -14,12 +14,12 @@ const e164 = (phoneNumber: string) => {
     }
 }
 
-class Message extends Model<InferAttributes<Message>, InferCreationAttributes<Message>> {
+class Message extends Model {
   declare id: CreationOptional<number>;
   declare from: string;
   declare to: string;
   declare message: string;
-  declare received_at: CreationOptional<Date>;
+  declare receivedAt: CreationOptional<Date>;
   declare status: CreationOptional<string>;
 };
 
@@ -48,7 +48,7 @@ Message.init(
         type: DataTypes.STRING(160),
         allowNull: false,
     },
-    received_at: {
+    receivedAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
     },
@@ -62,12 +62,19 @@ Message.init(
     modelName: 'Message',
     tableName: 'messages',
     timestamps: false,
+    indexes: [
+      /**
+       * Note: I added the following comments as reasoning behind the indexes below:
+       * - Since 'from' and 'to' represent identifiers (phone numbers) they should be indexed since they will likely be used in queries to filter messages by sender or recipient.
+       * - Since the 'status' field will likely be queried frequently to query messages based on their status (i.e... retrieving all active messages) it should be indexed.
+       * - Since the 'receivedAt' field will likely be queried frequently to query messages based on when they were received it should also be indexed.
+       */
+      { fields: ['from'] },
+      { fields: ['to'] },
+      { fields: ['status'] },
+      { fields: ['receivedAt'] }
+    ]
   }
 );
-
-/** Refresh db everytime we run the server */
-(async () => {
-    await sequelize.sync({ force: true });
-})();
 
 export default Message;

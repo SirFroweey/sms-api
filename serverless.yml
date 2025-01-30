@@ -1,0 +1,20 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: davidalmendarez
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: kixie
+service: kixie-expressjs-aws-lambda
+provider:
+  name: aws
+  runtime: nodejs18.x
+package:
+  individually: true
+  exclude:
+    - package-lock.json
+  include:
+    - '!node_modules/**'
+functions:
+  app:
+    handler: build/app.handler
+    events:
+      - http: ANY /
+      - http: ANY /{proxy+}

@@ -4,8 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "build": "tsc",
-    "dev": "node ./build/server.js",
+    "build": "rimraf build && tsc",
+    "dev": "node ./build/app.js",
     "start": "tsc && npm run dev"
   },
   "author": "",
@@ -16,8 +16,10 @@
     "express-rate-limit": "^7.5.0",
     "libphonenumber-js": "^1.11.18",
     "reflect-metadata": "^0.2.2",
+    "rimraf": "^6.0.1",
     "sequelize": "^6.37.5",
     "sequelize-typescript": "^2.1.6",
+    "serverless-http": "^3.2.0",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.20"
   },

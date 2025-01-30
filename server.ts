@@ -1,25 +1,20 @@
-import express, { Request, Response, Application } from 'express';
-import Server from './index';
+import express, { Application } from 'express';
+import cors, { CorsOptions } from 'cors';
+import Routes from './routes';
 
-const app: Application = express();
-const server: Server = new Server(app);
-const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 3000;
+export default class Server {
+  constructor(app: Application) {
+    this.config(app);
+    new Routes(app);
+  }
 
-app.get('/status', (req: Request, res: Response): Response => {
-  const status = {
-    'Status': 'Running'
-  };
-  return res.json(status);
-});
+  private config(app: Application): void {
+    const corsOptions: CorsOptions = {
+      origin: 'http://localhost:8000'
+    };
 
-app
-  .listen(PORT, 'localhost', function () {
-    console.log(`Server is running on port ${PORT}.`);
-  })
-  .on('error', (err: any) => {
-    if (err.code === 'EADDRINUSE') {
-      console.log('Error: address already in use');
-    } else {
-      console.log(err);
-    }
-  });
+    app.use(cors(corsOptions));
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }))
+  }
+}

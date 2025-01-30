@@ -76,13 +76,13 @@ Provide additional table(s) to upload and store a media attachments for each mes
 
 ## Design Questions (written answers, no code required)
 1. **Serverless**:
-   - How would you design the system & migrate your solution to be serverless with aws lambdas to ensure scalability?
+   - How would you design the system & migrate your solution to be serverless with aws lambdas to ensure scalability? **Answer: I would switch to Aurora Postgres Serverless. Then I would refactor the API into individual endpoints via API Gateway. Each endpoint would effectively be migrated into a single Lambda function. This would: promote better scalability (horizontally scale Lambdas with more traffic), reduce costs since an Express JS API costs more to spin up and run (more memory), more availability since each endpoint is independent, latency would drop since we wouldn't be wasting resources spinning up the entire Express API/faster cold boot, pave the way for easier authentication implementations via JWT Tokens and AWS Cognito/IAM where we would take advantage of AWS provided services and validators rather than hard-coding our own implementations, less tech debt since each independent Lambda/endpoint will be more manageable to maintain and the API(s) won't be part of a giant monolithic application in the long run.**
 
 2. **Authentication**:
-   - How would you implement authentication for the RESTful endpoints?
+   - How would you implement authentication for the RESTful endpoints? **Answer: Like mentioned in the above answer, I would defer to AWS Cognito/IAM with JWT tokens. A auth Lambda would be created to generate the JWT token. Then that token would be utilized during subsequent Lambda API calls.**
 
 3. **Security**:
-   - How would you secure the RESTful endpoints, the database, and the message contents?
+   - How would you secure the RESTful endpoints, the database, and the message contents? **Answer: I would secure the endpoints with AWS Cognito auth tokens. If we consider using AWS Amplify for our (Typescript) full-stack needs, we could sign our API requests. For the database, leverage AWS SSM for secrets. Assign AWS VPC for database to same group as Lambas (required); along with setting Public Accessibility to No. We could also utilize AWS KMS to encrypt sensitive information including message contents. KMS is a great option since it handles most of the overhead that normally requires a significant amount of manpower, including the rotation of keys.**
 
 4. **Real-Time Metrics**:
    - Imagine you need to provide a lightweight monitoring endpoint `/metrics` to return:
@@ -91,9 +91,12 @@ Provide additional table(s) to upload and store a media attachments for each mes
       - Current queue size.
       - Average message processing time.
 
+   **Answer: I would introduce a new table  named `statistics`. This table would be populated during the processing of every message input. The table could be composed of the following columns: `id`, `message_id`(foreign-key), `timestamp` (the time the message was processed), and `processing_time` (the time taken to process the given message in ms). I would then query this table to get the total messages processed via `SELECT COUNT(*) AS total_messages_processed FROM messages;
+`. Then we could then do `SELECT COUNT(*) AS current_queue_size FROM messages WHERE status = 'pending';` to calculate the current size of the queue and can count how many messages are currently in a `pending` status in the messages table. We could finally get the average message processing time via `SELECT AVG(processing_time) AS average_processing_time FROM statistics;`.**
+
 5. **Scalability**:
-   - How would you scale your solution to handle a large number of messages per second?
-   - What are the bottlenecks in your current design?
+   - How would you scale your solution to handle a large number of messages per second? **Answer: The immediate answer is to horizontally scale individual endpoints that require high availability and performance via a Load Balancer. This would require (as I hinted in other answers), refactoring the API to leverage API Gateway and AWS Lamba's to encapsulate each endpoint into its own independent piece. On the software side, we can implement  implement caching on GET endpoints like the /messages endpoint. We could also impose rate limits on ALL endpoints requiring high availability and performance. Furthermore, we can improve performance by establishing proper use of proper asynchronous coding patterns.**
+   - What are the bottlenecks in your current design? **Answer: Given the web application is a monolithic express JS API it would become increasingly difficult to scale as time goes by and the project grows in size. We cannot scale individual endpoints that require extra performance by vertical scaling, nor could we horizontally scale endpoints that require high availability. Also, the cold start/boot of the current design would be much slower than leveraging an API Gateway modeled application. Furthermore, If we tried scaling this application the costs would also be higher since more resources are required to run it.**
 
 ---
 
