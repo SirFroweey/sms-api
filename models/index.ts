@@ -7,7 +7,7 @@ const sequelize = new Sequelize({
 
 /** Let's refresh the db everytime we run the server for development purposes */
 (async () => {
-    await sequelize.sync({ force: true });
+  await sequelize.sync({ force: true });
 })();
 
 export default sequelize;

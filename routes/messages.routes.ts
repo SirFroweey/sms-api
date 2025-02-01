@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import MessagesController from '../controllers/messages.controller';
 import rateLimit, { RateLimitRequestHandler } from 'express-rate-limit';
+import { upload } from '../controllers/index'; 
 
 const seconds: number = 60 * 1000;
 const postRateLimiter: RateLimitRequestHandler = rateLimit({
@@ -8,7 +9,7 @@ const postRateLimiter: RateLimitRequestHandler = rateLimit({
   max: 5,
   message: {
     type: 'error',
-    message: 'Maximum amount of API requests reached for the given "from" phone number.'
+    message: 'Maximum amount of API requests reached for the given :from phone number.'
   },
   keyGenerator: (req) => {
     const { from } = req.body;
@@ -25,7 +26,7 @@ class MessageRoutes {
   }
 
   intializeRoutes() {
-    this.router.post('/', postRateLimiter, this.controller.create);
+    this.router.post('/', postRateLimiter, upload.single('image'), this.controller.create);
 
     this.router.get('/', this.controller.list);
   }

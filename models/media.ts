@@ -66,4 +66,12 @@ Media.belongsTo(Message, {
     foreignKey: 'messageId' 
 });
 
+Media.hasOne(Message, {
+    foreignKey: 'mediaId' 
+});
+Message.belongsTo(Media, { 
+    foreignKey: 'mediaId' 
+});
+
+
 export default Media;

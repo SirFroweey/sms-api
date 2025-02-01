@@ -55,6 +55,14 @@ Message.init(
     status: {
         type: DataTypes.ENUM('active', 'pending', 'deleted'),
         defaultValue: 'active',
+    },
+    mediaId: {
+      type: DataTypes.INTEGER,
+      references: {
+          model: 'media',
+          key: 'id',
+      },
+      allowNull: true,
     }
   },
   {

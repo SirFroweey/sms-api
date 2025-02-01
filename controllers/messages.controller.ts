@@ -1,5 +1,8 @@
 import { Request, Response } from 'express';
+import sequelize from '../models/index';
 import Message from '../models/message';
+import Media from '../models/media';
+import { getSafeQueryNumberArgument, CustomRequest } from './index';
 
 interface ListApiModel {
   from: string,
@@ -7,11 +10,13 @@ interface ListApiModel {
   status: string,
 };
 
+/**
+ * Ensures that the from and to properties have a '+' character at the beginning of the string.
+ * @param i ListApiModel interface
+ * @returns New ListApiModel interface with modified properties
+ */
 const cleanProperties = (i: ListApiModel): ListApiModel => {
   const addPlusPrefix = (propertyValue: string): string => {
-    /** 
-     * This function is used to basically add the missing + char to the front of the string if its missing
-     */
     if (!propertyValue.startsWith('+'))
     {
       propertyValue = '+' + propertyValue;
@@ -26,37 +31,59 @@ const cleanProperties = (i: ListApiModel): ListApiModel => {
   } as ListApiModel;
 };
 
-const getSafeQueryNumberArgument = (req: Request, name: string, defaultValue: number): number => {
-  const queryValue = req.query[name];
-  if (queryValue !== undefined) {
-    const parsedValue = Number(queryValue);
-    // Let's ensure that the parsed value is a valid number...
-    if (!isNaN(parsedValue)) {
-      return parsedValue;
-    }
-  }
-  return defaultValue;
-}
-
 export default class MessagesController {
-  async create(req: Request, res: Response) {
+  async create(req: CustomRequest, res: Response) {
     try {
       const { from, to, message } = req.body;
+      const { isFileValid } = req;
+
+      // Exit early if we encountered an issue with the uploaded file.
+      if (isFileValid === false) {
+        const errorMessage = 'You cannot upload the same image more than twice. Please ensure it is either a JPG or PNG.';
+        res.status(400).json({ error: errorMessage });
+        return;
+      }
+
+      // Determine if we can create a new message
       const twoSeconds = 2 * 1000;
       const previousMessage = await Message.findOne({ 
         where: { from, to },
         order: [['receivedAt', 'DESC']],
       });
+
+      // Create new message (if we can)
       const canSubmit = !previousMessage || 
         (new Date().getTime() - new Date(previousMessage.receivedAt).getTime()) > twoSeconds;
-
+      
       if (canSubmit) {
         const newMessage = await Message.create({ from, to, message });
+        // Attach the given image file to the newly created message if it exists in the payload
+        if (req.file) {
+          const { path, originalname, mimetype } = req.file;
+          console.log(`Image uploaded successfully: ${path}`);
+          const transaction = await sequelize.transaction();
+          try {
+            const newAttachment = await Media.create(
+              { messageId: newMessage.id, path, fileName: originalname, mimeType: mimetype },
+              { transaction }
+            );
+            // Update message with newly created mediaId
+            await newMessage.update({ mediaId: newAttachment.id }, { transaction });
+            // Now we can safely commit the transaction
+            await transaction.commit();
+          } catch (err) {
+            // Rollback transaction if an error is raised with the attachment of the given image 
+            await transaction.rollback();
+            console.error('Error attaching image to message:', err);
+            return res.status(500).json({ error: 'Failed to attach image to message.' });
+          }
+        }
         res.status(201).json(newMessage);
       } else {
         res.status(429).json({ error: 'You have submitted too many requests. Please wait before sending another message.' });
       }
     } catch (error) {
+      console.log(error);
       res.status(500).json({ error: 'Oops! An Internal Server Error has occurred.' });
     }
   }
