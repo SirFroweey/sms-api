@@ -3,6 +3,7 @@ import {
 } from 'sequelize';
 import sequelize from './index';
 import { isValidPhoneNumber } from 'libphonenumber-js';
+import Media from '../models/media';
 
 /**
  * Ensures phone number is in the e.164 standard
@@ -84,5 +85,20 @@ Message.init(
     ]
   }
 );
+
+Media.hasOne(Message, {
+    foreignKey: 'mediaId' 
+});
+Message.belongsTo(Media, { 
+    foreignKey: 'mediaId' 
+});
+
+Message.hasOne(Media, {
+  foreignKey: 'messageId' 
+});
+Media.belongsTo(Message, { 
+  foreignKey: 'messageId' 
+});
+
 
 export default Message;

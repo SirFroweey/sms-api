@@ -88,6 +88,30 @@ export default class MessagesController {
     }
   }
 
+  async get(req: Request, res: Response) {
+    try {
+      const { messageId } = req.params;
+      const message: Message | null = await Message.findOne({ 
+        where: { id: messageId },
+        include: Media
+      });
+    
+      if (!message) {
+        return res.status(404).json({ error: 'No message found for the given message id.' });
+      }
+    
+      const media = message.getDataValue('Medium');
+      
+      if (media) {
+        return res.status(200).json(media);
+      } else {
+        return res.status(400).json({ error: 'This message does not have an attachment.' });
+      }
+    } catch (error) {
+      res.status(500).json({ error: error });
+    }
+  }
+
   async list(req: Request, res: Response) {
     try {
       const filterArgs = cleanProperties(req.query as unknown as ListApiModel);

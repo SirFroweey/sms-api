@@ -2,7 +2,6 @@ import {
   DataTypes, Model, InferAttributes, InferCreationAttributes, CreationOptional
 } from 'sequelize';
 import sequelize from './index';
-import Message from './message';
 
 class Media extends Model {
     declare id: CreationOptional<number>;
@@ -58,20 +57,5 @@ Media.beforeCreate(async (attachment) => {
         throw new Error('We are sorry, but only jpg and png images are allowed.');
     }
 });
-
-Message.hasOne(Media, {
-    foreignKey: 'messageId' 
-});
-Media.belongsTo(Message, { 
-    foreignKey: 'messageId' 
-});
-
-Media.hasOne(Message, {
-    foreignKey: 'mediaId' 
-});
-Message.belongsTo(Media, { 
-    foreignKey: 'mediaId' 
-});
-
 
 export default Media;

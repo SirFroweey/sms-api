@@ -29,6 +29,8 @@ class MessageRoutes {
     this.router.post('/', postRateLimiter, upload.single('image'), this.controller.create);
 
     this.router.get('/', this.controller.list);
+
+    this.router.get('/:messageId/media', this.controller.get);
   }
 }
 
