@@ -129,35 +129,22 @@ Provide additional table(s) to upload and store a media attachments for each mes
 
 ### Running the project
 
-1. > npm run start
-2. or, `docker-compose up`
+1. First CD into the root project directory and run: `npm install` from inside the root directory.
+2. Then run the tests via `npm run test` or, `docker-compose up` from inside the root directory.
+3. Then run the API locally via `npm run start` or `docker-compose up` from inside the root directory.
+4. API accessible locally at: `http://localhost:8000/`.
 
 ### Running tests
-> From inside the root project directory run: `npm run test`
+From inside the root project directory run: `npm run test` or `docker-compose up`.
 
-Should yield similar results as below:
+It should yield similar results as below:
 
 ```
-C:\Users\lotta\Downloads\kixie-be-dev-takehome-v3\kixie-be-dev-takehome-v3>npm run test
-
-> kixie-backend-takehome@0.1.0 test
-> npm run build && jest ./tests
-
-
-> kixie-backend-takehome@0.1.0 build
-> rimraf build && tsc
-
- PASS  tests/models/media.test.ts
- PASS  tests/models/message.test.ts
- PASS  tests/controllers/message.controller.test.ts
-
-Test Suites: 3 passed, 3 total
-Tests:       6 passed, 6 total
+Test Suites: 4 passed, 4 total
+Tests:       16 passed, 16 total
 Snapshots:   0 total
-Time:        3.54 s, estimated 4 s
+Time:        12.584 s
 Ran all test suites matching /.\\tests/i.
-
-C:\Users\lotta\Downloads\kixie-be-dev-takehome-v3\kixie-be-dev-takehome-v3>
 ```
 
 ---
