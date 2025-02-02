@@ -5,16 +5,6 @@ import sequelize from './index';
 import { isValidPhoneNumber } from 'libphonenumber-js';
 import Media from '../models/media';
 
-/**
- * Ensures phone number is in the e.164 standard
- * @param PhoneNumber string
- */
-const e164 = (phoneNumber: string) => {
-    if(!isValidPhoneNumber(phoneNumber)) {
-        throw new Error('Invalid phone number format.');
-    }
-}
-
 class Message extends Model {
   declare id: CreationOptional<number>;
   declare from: string;
@@ -22,7 +12,18 @@ class Message extends Model {
   declare message: string;
   declare receivedAt: CreationOptional<Date>;
   declare status: CreationOptional<string>;
+  declare mediaId: number;
 };
+
+/**
+ * Ensures phone number is in the e.164 standard
+ * @param PhoneNumber string
+ */
+export const e164 = (phoneNumber: string) => {
+  if(!isValidPhoneNumber(phoneNumber)) {
+    throw new Error('Invalid phone number format.');
+  }
+}
 
 Message.init(
   {

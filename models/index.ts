@@ -1,13 +1,22 @@
 import { Sequelize } from 'sequelize-typescript';
 
-const sequelize = new Sequelize({
-  dialect: 'sqlite',
-  storage: './kixie.db',
-});
+let sequelize: Sequelize;
 
-/** Let's refresh the db everytime we run the server for development purposes */
-(async () => {
-  await sequelize.sync({ force: true });
-})();
+if(process.env.NODE_ENV === 'test') {
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: ':memory:',
+  });
+} else {
+  sequelize = new Sequelize({
+    dialect: 'sqlite',
+    storage: './kixie.db',
+    logging: false
+  });  
+  /** Let's refresh the db everytime we run the server for local development */
+  (async () => {
+    await sequelize.sync({ force: true });
+  })();
+}
 
 export default sequelize;

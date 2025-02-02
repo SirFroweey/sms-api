@@ -4,7 +4,7 @@ import Message from '../models/message';
 import Media from '../models/media';
 import { getSafeQueryNumberArgument, CustomRequest } from './index';
 
-interface ListApiModel {
+export interface ListApiModel {
   from: string,
   to: string,
   status: string,
@@ -15,7 +15,7 @@ interface ListApiModel {
  * @param i ListApiModel interface
  * @returns New ListApiModel interface with modified properties
  */
-const cleanProperties = (i: ListApiModel): ListApiModel => {
+export const cleanProperties = (i: ListApiModel): ListApiModel => {
   const addPlusPrefix = (propertyValue: string): string => {
     if (!propertyValue.startsWith('+'))
     {
@@ -39,7 +39,7 @@ export default class MessagesController {
 
       // Exit early if we encountered an issue with the uploaded file.
       if (isFileValid === false) {
-        const errorMessage = 'You cannot upload the same image more than twice. Please ensure it is either a JPG or PNG.';
+        const errorMessage = 'You cannot upload the same image more than twice. Also, please ensure it is either a JPG or PNG.';
         res.status(400).json({ error: errorMessage });
         return;
       }

@@ -26,7 +26,7 @@ class MessageRoutes {
   }
 
   intializeRoutes() {
-    this.router.post('/', postRateLimiter, upload.single('image'), this.controller.create);
+    this.router.post('/', upload.single('image'), postRateLimiter, this.controller.create);
 
     this.router.get('/', this.controller.list);
 

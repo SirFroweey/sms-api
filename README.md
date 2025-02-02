@@ -124,3 +124,40 @@ Provide additional table(s) to upload and store a media attachments for each mes
 3. If you have any questions or need clarification, please email `team@people.capital`.
 
 ---
+
+## David Almendarez - Additions Below
+
+### Running the project
+
+1. > npm run start
+2. or, `docker-compose up`
+
+### Running tests
+> From inside the root project directory run: `npm run test`
+
+Should yield similar results as below:
+
+```
+C:\Users\lotta\Downloads\kixie-be-dev-takehome-v3\kixie-be-dev-takehome-v3>npm run test
+
+> kixie-backend-takehome@0.1.0 test
+> npm run build && jest ./tests
+
+
+> kixie-backend-takehome@0.1.0 build
+> rimraf build && tsc
+
+ PASS  tests/models/media.test.ts
+ PASS  tests/models/message.test.ts
+ PASS  tests/controllers/message.controller.test.ts
+
+Test Suites: 3 passed, 3 total
+Tests:       6 passed, 6 total
+Snapshots:   0 total
+Time:        3.54 s, estimated 4 s
+Ran all test suites matching /.\\tests/i.
+
+C:\Users\lotta\Downloads\kixie-be-dev-takehome-v3\kixie-be-dev-takehome-v3>
+```
+
+---
