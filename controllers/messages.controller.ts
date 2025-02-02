@@ -24,11 +24,21 @@ export const cleanProperties = (i: ListApiModel): ListApiModel => {
     return propertyValue;
   };
 
-  return {
-    from: addPlusPrefix(i.from),
-    to: addPlusPrefix(i.to),
-    status: i.status,
-  } as ListApiModel;
+  var newObject: Record<string,any> = {}
+
+  if (i.status) {
+    newObject.status = i.status;
+  }
+
+  if (i.from) {
+    newObject.from = addPlusPrefix(i.from);
+  }
+
+  if (i.to) {
+    newObject.to = addPlusPrefix(i.to);
+  }
+
+  return newObject as ListApiModel;
 };
 
 export default class MessagesController {
